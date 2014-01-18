@@ -23,7 +23,11 @@ describe('deps normalizer', function() {
             { block : 'b', mod : 'm', val : 'v' },
             { block : 'b', elem : 'e' },
             { block : 'b', elem : 'e', mod : 'm' },
-            { block : 'b', elem : 'e', mod : 'm', val : 'v' }
+            { block : 'b', elem : 'e', mod : 'm', val : 'v' },
+            { block : 'b', tech : 't' },
+            { block : 'b', elem : 'e', tech : 't' },
+            { block : 'b', elem : 'e', mod : 'm', tech : 't' },
+            { block : 'b', elem : 'e', mod : 'm', val : 'v', tech : 't' }
         ];
 
         it('should pass full declaration', function() {
@@ -33,8 +37,8 @@ describe('deps normalizer', function() {
         });
     });
 
-    describe.skip('single forms', function() {
-        describe('block', function() {
+    describe('single forms', function() {
+        describe.skip('block', function() {
             it('should accept declare "block" with array', function() {
                 depsormalize({ block : ['b1', 'b2'] })
                     .must.eql([
@@ -51,7 +55,7 @@ describe('deps normalizer', function() {
         });
 
         describe('elem', function() {
-            it('should accept declare "elem" with array', function() {
+            it('should accept declare "elem" with array (bem/bem-tools#401)', function() {
                 depsormalize({ block : 'b', elem : ['e1', 'e2'] })
                     .must.eql([
                         { block : 'b', elem : 'e1' },
