@@ -30,47 +30,22 @@ function normalize(deps) {
     if(deps.blocks) {
         var blocks = deps.blocks;
         if(!isArray(blocks)) blocks = [blocks];
-
         pushBlocks(blocks);
     }
 
     var block = deps.block,
-        elem = deps.elem,
-        i, slen, decl;
+        elem = deps.elem;
 
-    if(deps.elems) {
-        var elems = deps.elems;
+    walk(deps.elems, pushElems);
 
-        if(!isArray(elems)) elems = [elems];
-
-        i = 0;
-        slen = result.length;
-
-        do {
-            decl = result[i] || {};
-
-            if(decl.block) block = decl.block;
-            pushElems(block, elems);
-        } while(++i < slen);
+    // XXX: workaround for bem/bem-tool#401
+    if(isArray(deps.elem)) {
+        walk(deps.elem, function(block, elem, elems) {
+            pushElems(block, null, elems, true);
+        });
     }
 
-    if(deps.mods) {
-        var mods = deps.mods;
-
-        if(!isArray(mods)) mods = [mods];
-
-        i = 0;
-        slen = result.length;
-
-        do {
-            decl = result[i] || {};
-
-            if(decl.block) block = decl.block;
-            if(decl.elem) elem = decl.elem;
-
-            pushMods(block, elem, mods);
-        } while(++i < slen);
-    }
+    walk(deps.mods, pushMods);
 
     if(!result.length) {
         push(extendDecl({}, deps));
@@ -78,7 +53,30 @@ function normalize(deps) {
 
     return result;
 
+    function walk(items, cb) {
+        if(!items) return;
+        if(!isArray(items)) items = [items];
+
+        var i = 0,
+            slen = result.length,
+            decl;
+
+        do {
+            decl = result[i] || {};
+
+            if(decl.block) block = decl.block;
+            if(decl.elem) elem = decl.elem;
+
+            cb(block, elem, items);
+        } while(++i < slen);
+    }
+
     function push(decl) {
+        if(isArray(decl)) {
+            decl.forEach(push);
+            return;
+        }
+
         var key = identify(decl);
 
         if(cache[key]) return;
@@ -106,8 +104,8 @@ function normalize(deps) {
         }, []);
     }
 
-    function pushElems(block, elems) {
-        pushOne(block);
+    function pushElems(block, _, elems, single) {
+        single || pushOne(block);
 
         elems.forEach(function(elem) {
             var d = {};
@@ -147,43 +145,19 @@ function normalize(deps) {
     }
 }
 
-function extendDecl(dest, src) {
-    extendBlock(dest ,src);
-    extendElem(dest, src);
-    extendMod(dest, src);
-    extendVal(dest, src);
-    extendTech(dest, src);
-    return dest;
+function extendDecl(decl, src) {
+    extend('tech', decl, src);
+    extend('block', decl, src);
+    extend('elem', decl, src);
+    extend('mod', decl, src);
+    extend('val', decl, src);
+    return decl;
 }
 
-function extendBlock(d, s) {
-    if(d.block) return d;
-    if(s.block) d.block = s.block;
-    return d;
-}
-
-function extendElem(d, s) {
-    if(d.elem) return d;
-    if(s.elem) d.elem = s.elem;
-    return d;
-}
-
-function extendMod(d, s) {
-    if(d.mod) return d;
-    if(s.mod) d.mod = s.mod;
-    return d;
-}
-
-function extendVal(d, s) {
-    if(d.val) return d;
-    if(s.val) d.val = s.val;
-    return d;
-}
-
-function extendTech(d, s) {
-    if(d.tech) return d;
-    if(s.tech) d.tech = s.tech;
-    return d;
+function extend(type, decl, src) {
+    if(decl[type]) return decl;
+    if(src[type]) decl[type] = src[type];
+    return decl;
 }
 
 function identify(decl) {
