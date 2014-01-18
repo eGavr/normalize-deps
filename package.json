@@ -1,6 +1,6 @@
 {
   "name": "depsormalize",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "deps normalizer",
   "main": "index.js",
   "scripts": {
