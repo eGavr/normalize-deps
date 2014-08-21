@@ -1,25 +1,19 @@
-depsormalize
-============
+normalize-deps
+==============
 
-Just for fun `deps` normalizer.
+Stand alone [`deps` format](http://bem.info/tools/bem/bem-tools/depsjs/#deps-js-syntax) normalizer.
 
-Work in progress.
+**NOTE**: This module is in work in progress state.
 
 ```javascript
-var depsormalize = require('depsormalize');
-console.log(depsormalize({ block : 'i-bem', elems : ['dom', 'html'] }));
+var normalizeDeps = require('normalize-deps');
+console.log(normalizeDeps({ block : 'i-bem', elems : ['dom', 'html'] }));
 ```
 
 ```
 [ { block: 'i-bem' },
   { block: 'i-bem', elem: 'dom' },
   { block: 'i-bem', elem: 'html' } ]
-```
-
-## Install
-
-```
-› npm install git://github.com/narqo/depsormalize
 ```
 
 ## License

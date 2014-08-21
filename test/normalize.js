@@ -1,16 +1,16 @@
 require('must');
-var depsormalize = require('../');
+var normalizeDeps = require('../');
 
 describe('deps normalizer', function() {
     describe('simple', function() {
         it('should return array', function() {
-            var deps = depsormalize({ block : 'b1' });
+            var deps = normalizeDeps({ block : 'b1' });
             deps.must.be.array();
             deps.must.not.be.empty();
         });
 
         it('should consume array of declarations', function() {
-            var deps = depsormalize([{ block : 'b1' }, { block : 'b2' }]);
+            var deps = normalizeDeps([{ block : 'b1' }, { block : 'b2' }]);
             deps.must.be.array();
             deps.must.have.length(2);
         });
@@ -32,7 +32,7 @@ describe('deps normalizer', function() {
 
         it('should pass full declaration', function() {
             inDeps.forEach(function(idep) {
-                depsormalize(idep).must.be.eql([idep]);
+                normalizeDeps(idep).must.be.eql([idep]);
             });
         });
     });
@@ -40,13 +40,13 @@ describe('deps normalizer', function() {
     describe('single forms', function() {
         describe.skip('block', function() {
             it('should accept declare "block" with array', function() {
-                depsormalize({ block : ['b1', 'b2'] })
+                normalizeDeps({ block : ['b1', 'b2'] })
                     .must.eql([
                         { block : 'b1' },
                         { block : 'b2' }
                     ]);
 
-                depsormalize({ block : ['b1', 'b2'], elem : 'e' })
+                normalizeDeps({ block : ['b1', 'b2'], elem : 'e' })
                     .must.eql([
                         { block : 'b1', elem : 'e' },
                         { block : 'b2', elem : 'e' }
@@ -56,7 +56,7 @@ describe('deps normalizer', function() {
 
         describe('elem', function() {
             it('should accept declare "elem" with array (bem/bem-tools#401)', function() {
-                depsormalize({ block : 'b', elem : ['e1', 'e2'] })
+                normalizeDeps({ block : 'b', elem : ['e1', 'e2'] })
                     .must.eql([
                         { block : 'b', elem : 'e1' },
                         { block : 'b', elem : 'e2' }
@@ -68,19 +68,19 @@ describe('deps normalizer', function() {
     describe('plural forms', function() {
         describe('blocks', function() {
             it('should understand "blocks" declaration', function() {
-                depsormalize({ blocks : 'b1' })
+                normalizeDeps({ blocks : 'b1' })
                     .must.eql([{ block : 'b1' }]);
 
-                depsormalize({ blocks : ['b1'] })
+                normalizeDeps({ blocks : ['b1'] })
                     .must.eql([{ block : 'b1' }]);
 
-                depsormalize({ blocks : ['b1'], elem : 'e' })
+                normalizeDeps({ blocks : ['b1'], elem : 'e' })
                     .must.eql([{ block : 'b1' }, { block : 'b1', elem : 'e' }]);
 
-                depsormalize({ blocks : ['b1', 'b2'] })
+                normalizeDeps({ blocks : ['b1', 'b2'] })
                     .must.eql([{ block : 'b1' }, { block : 'b2'}]);
 
-                depsormalize({ blocks : ['b1', 'b2'], elem : 'e' })
+                normalizeDeps({ blocks : ['b1', 'b2'], elem : 'e' })
                     .must.eql([
                         { block : 'b1' },
                         { block : 'b1', elem : 'e' },
@@ -92,13 +92,13 @@ describe('deps normalizer', function() {
 
         describe('elems', function() {
             it('should understand "elems" declaration', function() {
-                depsormalize({ block : 'b', elems : 'e1' })
+                normalizeDeps({ block : 'b', elems : 'e1' })
                     .must.eql([
                         { block : 'b' },
                         { block : 'b', elem : 'e1' }
                     ]);
 
-                depsormalize({ block : 'b', elems : ['e1', 'e2'] })
+                normalizeDeps({ block : 'b', elems : ['e1', 'e2'] })
                     .must.eql([
                         { block : 'b' },
                         { block : 'b', elem : 'e1' },
@@ -109,14 +109,14 @@ describe('deps normalizer', function() {
 
         describe('mods', function() {
             it('should understand "mods" declaration', function() {
-                depsormalize({ block : 'b', mods : { m : 'v' } })
+                normalizeDeps({ block : 'b', mods : { m : 'v' } })
                     .must.eql([
                         { block : 'b' },
                         { block : 'b', mod : 'm' },
                         { block : 'b', mod : 'm', val : 'v' }
                     ]);
 
-                depsormalize({ block : 'b', mods : [{ m1 : 'v' }, { m2 : 'v' }] })
+                normalizeDeps({ block : 'b', mods : [{ m1 : 'v' }, { m2 : 'v' }] })
                     .must.eql([
                         { block : 'b' },
                         { block : 'b', mod : 'm1' },
@@ -125,7 +125,7 @@ describe('deps normalizer', function() {
                         { block : 'b', mod : 'm2', val : 'v' }
                     ]);
 
-                depsormalize({ block : 'b', mods : { m : ['v1', 'v2'] } })
+                normalizeDeps({ block : 'b', mods : { m : ['v1', 'v2'] } })
                     .must.eql([
                         { block : 'b' },
                         { block : 'b', mod : 'm' },
@@ -133,7 +133,7 @@ describe('deps normalizer', function() {
                         { block : 'b', mod : 'm', val : 'v2' }
                     ]);
 
-                depsormalize({ block : 'b', mods : { m1 : 'v', m2 : 'v' } })
+                normalizeDeps({ block : 'b', mods : { m1 : 'v', m2 : 'v' } })
                     .must.eql([
                         { block : 'b' },
                         { block : 'b', mod : 'm1' },
@@ -144,7 +144,7 @@ describe('deps normalizer', function() {
             });
 
             it.skip('should understand "mods-names" notations', function() {
-                depsormalize({ block : 'b', mod : { names : ['m1', 'm2'] } })
+                normalizeDeps({ block : 'b', mod : { names : ['m1', 'm2'] } })
                     .must.eql([
                         { block : 'b' },
                         { block : 'b', mod : 'm1' },
@@ -155,7 +155,7 @@ describe('deps normalizer', function() {
 
         describe('blocks + elems', function() {
             it('should understand both "blocks" and "elems" declaration', function() {
-                depsormalize({ blocks : 'b1', elems : 'e1' })
+                normalizeDeps({ blocks : 'b1', elems : 'e1' })
                     .must.eql([
                         { block : 'b1' },
                         { block : 'b1', elem : 'e1' }
@@ -165,10 +165,10 @@ describe('deps normalizer', function() {
 
         describe('uniqness', function() {
             it('should return uniq set of declaration', function() {
-                depsormalize({ blocks : ['b', 'b', 'b'] })
+                normalizeDeps({ blocks : ['b', 'b', 'b'] })
                     .must.eql([{ block : 'b' }]);
 
-                depsormalize({ block : 'b', elems : ['e', 'e', 'e'] })
+                normalizeDeps({ block : 'b', elems : ['e', 'e', 'e'] })
                     .must.eql([
                         { block : 'b' },
                         { block : 'b', elem : 'e' }

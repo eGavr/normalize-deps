@@ -14,7 +14,7 @@ var toString = Object.prototype.toString,
         return toString.call(o) === '[object Object]';
     };
 
-module.exports = function depsormalize(deps) {
+module.exports = function normalizeDeps(deps) {
     if(isArray(deps)) return deps.map(normalize);
     return normalize(deps);
 };

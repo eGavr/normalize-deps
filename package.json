@@ -1,13 +1,21 @@
 {
-  "name": "depsormalize",
-  "version": "0.0.2",
-  "description": "deps normalizer",
+  "name": "normalize-deps",
+  "version": "0.1.0",
+  "description": "deps format normalizer",
   "main": "index.js",
   "scripts": {
     "test": "mocha -R spec test"
   },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/narqo/normalize-deps.git"
+  },
   "author": "Vladimir Varankin <varankinv@yandex-team.ru> (http://github.com/narqo)",
   "license": "WTFPL",
+  "homepage": "https://github.com/narqo/normalize-deps",
+  "bugs": {
+    "url": "https://github.com/narqo/normalize-deps/issues"
+  },
   "devDependencies": {
     "mocha": "~1.17.0",
     "must": "~0.10.0"
