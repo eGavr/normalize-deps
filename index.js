@@ -15,6 +15,8 @@ var toString = Object.prototype.toString,
     };
 
 module.exports = function normalizeDeps(deps) {
+    if(typeof deps === 'string') return [{ block: deps }];
+
     if(isArray(deps)) return deps.map(normalize);
     return normalize(deps);
 };
@@ -121,8 +123,21 @@ function normalize(deps) {
         pushOne(block, elem);
 
         mods.forEach(function(mod) {
+            if(typeof mod === 'string') {
+                var d = { modName: mod };
+
+                if(block) {
+                    d.block = block;
+                    if(elem) d.elem = elem;
+                }
+
+                push(extendDecl({}, d));
+
+                return;
+            }
+
             Object.keys(mod).forEach(function(name) {
-                var d = { mod :  name };
+                var d = { modName :  name };
                 if(block) {
                     d.block = block;
                     if(elem) d.elem = elem;
@@ -138,7 +153,7 @@ function normalize(deps) {
                 if(!isArray(vals)) vals = [vals];
 
                 vals.forEach(function(val) {
-                    push(extendDecl({ val : val }, d));
+                    push(extendDecl({ modVal : val }, d));
                 });
             });
         });
@@ -149,8 +164,8 @@ function extendDecl(decl, src) {
     extend('tech', decl, src);
     extend('block', decl, src);
     extend('elem', decl, src);
-    extend('mod', decl, src);
-    extend('val', decl, src);
+    extend('modName', decl, src);
+    extend('modVal', decl, src);
     return decl;
 }
 
@@ -163,5 +178,5 @@ function extend(type, decl, src) {
 function identify(decl) {
     return decl.block +
         (decl.elem? '__' + decl.elem : '') +
-        (decl.mod? '_' + decl.mod + (decl.val? '_' + decl.val : '') : '');
+        (decl.modName? '_' + decl.modName + (decl.modVal? '_' + decl.modVal : '') : '');
 }
