@@ -17,7 +17,7 @@
     "url": "https://github.com/narqo/normalize-deps/issues"
   },
   "devDependencies": {
-    "mocha": "~1.17.0",
+    "mocha": "~100.17.0",
     "must": "~0.10.0"
   }
 }
